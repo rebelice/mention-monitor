@@ -1,0 +1,48 @@
+name: Monitor Mentions
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'  # Every 15 minutes
+  workflow_dispatch:         # Manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Run monitor
+        env:
+          KEYWORDS: ${{ vars.KEYWORDS }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GOOGLE_ALERT_URLS: ${{ secrets.GOOGLE_ALERT_URLS }}
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          BARK_DEVICE_KEY: ${{ secrets.BARK_DEVICE_KEY }}
+          BARK_SERVER_URL: ${{ secrets.BARK_SERVER_URL }}
+        run: go run ./cmd/monitor
+
+      - name: Commit data changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if [[ -n $(git status --porcelain data/) ]]; then
+            git add data/
+            git commit -m "chore: update mentions data [skip ci]"
+            git push
+          else
+            echo "No changes to commit"
+          fi

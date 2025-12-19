@@ -1,0 +1,92 @@
+name: Monthly Archive
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'  # First day of every month at 00:00 UTC
+  workflow_dispatch:      # Manual trigger
+    inputs:
+      month:
+        description: 'Month to archive (YYYY-MM format, defaults to last month)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine archive month
+        id: month
+        run: |
+          if [[ -n "${{ inputs.month }}" ]]; then
+            ARCHIVE_MONTH="${{ inputs.month }}"
+          else
+            ARCHIVE_MONTH=$(date -d "last month" +%Y-%m)
+          fi
+          echo "month=$ARCHIVE_MONTH" >> $GITHUB_OUTPUT
+          echo "Archiving month: $ARCHIVE_MONTH"
+
+      - name: Create monthly archive
+        run: |
+          ARCHIVE_MONTH="${{ steps.month.outputs.month }}"
+          ARCHIVE_FILE="data/archives/${ARCHIVE_MONTH}.json"
+
+          mkdir -p data/archives
+
+          if [[ ! -f data/mentions.json ]]; then
+            echo "No mentions.json found, skipping archive"
+            exit 0
+          fi
+
+          # Extract mentions from the archive month
+          jq --arg month "$ARCHIVE_MONTH" '
+            {
+              archived_at: now | todate,
+              month: $month,
+              mentions: [.mentions[] | select(.discovered_at | startswith($month))]
+            }
+          ' data/mentions.json > "$ARCHIVE_FILE"
+
+          ARCHIVED_COUNT=$(jq '.mentions | length' "$ARCHIVE_FILE")
+          echo "Archived $ARCHIVED_COUNT mentions to $ARCHIVE_FILE"
+
+          if [[ "$ARCHIVED_COUNT" == "0" ]]; then
+            echo "No mentions to archive for $ARCHIVE_MONTH"
+            rm "$ARCHIVE_FILE"
+            exit 0
+          fi
+
+          # Remove archived mentions from main file
+          jq --arg month "$ARCHIVE_MONTH" '
+            .mentions |= [.[] | select(.discovered_at | startswith($month) | not)]
+          ' data/mentions.json > tmp.json && mv tmp.json data/mentions.json
+
+          echo "Remaining mentions: $(jq '.mentions | length' data/mentions.json)"
+
+      - name: Commit archive
+        run: |
+          ARCHIVE_MONTH="${{ steps.month.outputs.month }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if [[ -n $(git status --porcelain data/) ]]; then
+            git add data/
+            git commit -m "chore: archive mentions for ${ARCHIVE_MONTH}"
+            git push
+
+            # Create tag for the archive
+            git tag "archive-${ARCHIVE_MONTH}" -m "Monthly archive for ${ARCHIVE_MONTH}"
+            git push origin "archive-${ARCHIVE_MONTH}"
+
+            echo "Created archive tag: archive-${ARCHIVE_MONTH}"
+          else
+            echo "No changes to commit"
+          fi
