@@ -32,23 +32,23 @@ func main() {
 	fmt.Println("Testing notifications with mock data...")
 	fmt.Printf("Mock mention: %s - %s\n", mention.Source, mention.Title)
 
-	// Test MongoDB
-	mongoURI := os.Getenv("MONGODB_URI")
-	if mongoURI != "" {
-		fmt.Println("\nSending to MongoDB...")
-		mongodb, err := notifier.NewMongoDB(mongoURI)
+	// Test PostgreSQL (Supabase)
+	dbURL := os.Getenv("DATABASE_URL")
+	if dbURL != "" {
+		fmt.Println("\nSending to PostgreSQL...")
+		pg, err := notifier.NewPostgres(ctx, dbURL)
 		if err != nil {
-			fmt.Printf("MongoDB connection error: %v\n", err)
+			fmt.Printf("PostgreSQL connection error: %v\n", err)
 		} else {
-			defer mongodb.Close(ctx)
-			if err := mongodb.Send(ctx, mentions); err != nil {
-				fmt.Printf("MongoDB error: %v\n", err)
+			defer pg.Close()
+			if err := pg.Send(ctx, mentions); err != nil {
+				fmt.Printf("PostgreSQL error: %v\n", err)
 			} else {
-				fmt.Println("MongoDB: Success!")
+				fmt.Println("PostgreSQL: Success!")
 			}
 		}
 	} else {
-		fmt.Println("MongoDB: Skipped (not configured)")
+		fmt.Println("PostgreSQL: Skipped (not configured)")
 	}
 
 	// Test Bark

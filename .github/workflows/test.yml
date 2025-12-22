@@ -20,7 +20,7 @@ jobs:
 
       - name: Run test notification
         env:
-          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           BARK_DEVICE_KEY: ${{ secrets.BARK_DEVICE_KEY }}
           BARK_SERVER_URL: ${{ secrets.BARK_SERVER_URL }}
         run: go run ./cmd/test-notify

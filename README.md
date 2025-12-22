@@ -1,12 +1,12 @@
 # Mention Monitor
 
-Monitor keyword mentions across the internet and get notified via Bark. All mentions are archived to MongoDB Cloud Atlas for easy browsing and management.
+Monitor keyword mentions across the internet and get notified via Bark. All mentions are archived to Supabase (PostgreSQL) for easy browsing and management.
 
 ## Features
 
 - **11 Data Sources**: Hacker News, Reddit, GitHub, Twitter (via Nitter), Dev.to, Medium, Stack Overflow, Product Hunt, Lobsters, pkg.go.dev, Google
 - **Real-time Notifications**: Push notifications via Bark (iOS)
-- **MongoDB Integration**: All mentions stored in MongoDB Cloud Atlas for easy management
+- **Supabase Integration**: All mentions stored in Supabase (PostgreSQL) for easy management
 - **GitHub Actions**: Runs every 15 minutes, completely free
 - **Monthly Archives**: Automatic monthly archiving with git tags
 
@@ -16,17 +16,15 @@ Monitor keyword mentions across the internet and get notified via Bark. All ment
 
 Click the "Fork" button to create your own copy.
 
-### 2. Set up MongoDB Cloud Atlas
+### 2. Set up Supabase
 
-1. Go to [MongoDB Cloud Atlas](https://www.mongodb.com/cloud/atlas) and create a free cluster
-2. Create a database user with read/write permissions
-3. Add your IP address to the network access list (or allow access from anywhere for GitHub Actions: `0.0.0.0/0`)
-4. Get your connection string:
-   - Click "Connect" on your cluster
-   - Choose "Connect your application"
-   - Copy the connection string (replace `<password>` with your database user password)
+1. Go to [Supabase](https://supabase.com) and create a free project
+2. Go to Project Settings → Database
+3. Copy the "Connection string" (URI format) under "Transaction Mode Pooler"
+   - This is recommended for serverless environments like GitHub Actions
+4. Replace `[YOUR-PASSWORD]` with your database password
 
-The database `mention_monitor` and collection `mentions` will be created automatically on first run.
+The `mentions` table will be created automatically on first run.
 
 ### 3. Get Bark Device Key
 
@@ -41,7 +39,7 @@ Add these **Secrets**:
 
 | Secret | Description | Required |
 |--------|-------------|----------|
-| `MONGODB_URI` | MongoDB Atlas connection string | Yes |
+| `DATABASE_URL` | Supabase PostgreSQL connection string | Yes |
 | `BARK_DEVICE_KEY` | Bark device key | Yes |
 | `BARK_SERVER_URL` | Custom Bark server URL | No |
 | `GH_TOKEN` | GitHub personal access token (for higher rate limits) | No |
@@ -130,7 +128,7 @@ mention-monitor/
 **Completely free!**
 
 - GitHub Actions: Free for public repos
-- MongoDB Atlas: Free tier (512MB storage)
+- Supabase: Free tier (500MB database)
 - Bark: Free (or self-host)
 - All data sources: Free RSS/API
 

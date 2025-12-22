@@ -67,18 +67,18 @@ func main() {
 	fmt.Printf("Found %d new mentions\n", len(newMentions))
 
 	if len(newMentions) > 0 {
-		// Send to MongoDB
-		if config.MongoDBURI != "" {
-			fmt.Println("Sending to MongoDB...")
-			mongodb, err := notifier.NewMongoDB(config.MongoDBURI)
+		// Send to PostgreSQL (Supabase)
+		if config.DatabaseURL != "" {
+			fmt.Println("Sending to PostgreSQL...")
+			pg, err := notifier.NewPostgres(ctx, config.DatabaseURL)
 			if err != nil {
-				fmt.Printf("MongoDB connection error: %v\n", err)
+				fmt.Printf("PostgreSQL connection error: %v\n", err)
 			} else {
-				defer mongodb.Close(ctx)
-				if err := mongodb.Send(ctx, newMentions); err != nil {
-					fmt.Printf("MongoDB error: %v\n", err)
+				defer pg.Close()
+				if err := pg.Send(ctx, newMentions); err != nil {
+					fmt.Printf("PostgreSQL error: %v\n", err)
 				} else {
-					fmt.Printf("Added %d mentions to MongoDB\n", len(newMentions))
+					fmt.Printf("Added %d mentions to PostgreSQL\n", len(newMentions))
 				}
 			}
 		}
@@ -112,7 +112,7 @@ type Config struct {
 	Keywords        []string
 	GitHubToken     string
 	GoogleAlertURLs []string
-	MongoDBURI      string
+	DatabaseURL     string
 	BarkDeviceKey   string
 	BarkServerURL   string
 }
@@ -133,7 +133,7 @@ func loadConfig() Config {
 		Keywords:        strings.Split(keywords, ","),
 		GitHubToken:     os.Getenv("GITHUB_TOKEN"),
 		GoogleAlertURLs: alertURLs,
-		MongoDBURI:      os.Getenv("MONGODB_URI"),
+		DatabaseURL:     os.Getenv("DATABASE_URL"),
 		BarkDeviceKey:   os.Getenv("BARK_DEVICE_KEY"),
 		BarkServerURL:   os.Getenv("BARK_SERVER_URL"),
 	}
