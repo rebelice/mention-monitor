@@ -32,19 +32,23 @@ func main() {
 	fmt.Println("Testing notifications with mock data...")
 	fmt.Printf("Mock mention: %s - %s\n", mention.Source, mention.Title)
 
-	// Test Notion
-	notionToken := os.Getenv("NOTION_TOKEN")
-	notionDBID := os.Getenv("NOTION_DATABASE_ID")
-	if notionToken != "" && notionDBID != "" {
-		fmt.Println("\nSending to Notion...")
-		notion := notifier.NewNotion(notionToken, notionDBID)
-		if err := notion.Send(ctx, mentions); err != nil {
-			fmt.Printf("Notion error: %v\n", err)
+	// Test MongoDB
+	mongoURI := os.Getenv("MONGODB_URI")
+	if mongoURI != "" {
+		fmt.Println("\nSending to MongoDB...")
+		mongodb, err := notifier.NewMongoDB(mongoURI)
+		if err != nil {
+			fmt.Printf("MongoDB connection error: %v\n", err)
 		} else {
-			fmt.Println("Notion: Success!")
+			defer mongodb.Close(ctx)
+			if err := mongodb.Send(ctx, mentions); err != nil {
+				fmt.Printf("MongoDB error: %v\n", err)
+			} else {
+				fmt.Println("MongoDB: Success!")
+			}
 		}
 	} else {
-		fmt.Println("Notion: Skipped (not configured)")
+		fmt.Println("MongoDB: Skipped (not configured)")
 	}
 
 	// Test Bark

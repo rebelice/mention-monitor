@@ -67,14 +67,19 @@ func main() {
 	fmt.Printf("Found %d new mentions\n", len(newMentions))
 
 	if len(newMentions) > 0 {
-		// Send to Notion
-		if config.NotionToken != "" && config.NotionDatabaseID != "" {
-			fmt.Println("Sending to Notion...")
-			notion := notifier.NewNotion(config.NotionToken, config.NotionDatabaseID)
-			if err := notion.Send(ctx, newMentions); err != nil {
-				fmt.Printf("Notion error: %v\n", err)
+		// Send to MongoDB
+		if config.MongoDBURI != "" {
+			fmt.Println("Sending to MongoDB...")
+			mongodb, err := notifier.NewMongoDB(config.MongoDBURI)
+			if err != nil {
+				fmt.Printf("MongoDB connection error: %v\n", err)
 			} else {
-				fmt.Printf("Added %d mentions to Notion\n", len(newMentions))
+				defer mongodb.Close(ctx)
+				if err := mongodb.Send(ctx, newMentions); err != nil {
+					fmt.Printf("MongoDB error: %v\n", err)
+				} else {
+					fmt.Printf("Added %d mentions to MongoDB\n", len(newMentions))
+				}
 			}
 		}
 
@@ -104,13 +109,12 @@ func main() {
 }
 
 type Config struct {
-	Keywords         []string
-	GitHubToken      string
-	GoogleAlertURLs  []string
-	NotionToken      string
-	NotionDatabaseID string
-	BarkDeviceKey    string
-	BarkServerURL    string
+	Keywords        []string
+	GitHubToken     string
+	GoogleAlertURLs []string
+	MongoDBURI      string
+	BarkDeviceKey   string
+	BarkServerURL   string
 }
 
 func loadConfig() Config {
@@ -126,13 +130,12 @@ func loadConfig() Config {
 	}
 
 	return Config{
-		Keywords:         strings.Split(keywords, ","),
-		GitHubToken:      os.Getenv("GITHUB_TOKEN"),
-		GoogleAlertURLs:  alertURLs,
-		NotionToken:      os.Getenv("NOTION_TOKEN"),
-		NotionDatabaseID: os.Getenv("NOTION_DATABASE_ID"),
-		BarkDeviceKey:    os.Getenv("BARK_DEVICE_KEY"),
-		BarkServerURL:    os.Getenv("BARK_SERVER_URL"),
+		Keywords:        strings.Split(keywords, ","),
+		GitHubToken:     os.Getenv("GITHUB_TOKEN"),
+		GoogleAlertURLs: alertURLs,
+		MongoDBURI:      os.Getenv("MONGODB_URI"),
+		BarkDeviceKey:   os.Getenv("BARK_DEVICE_KEY"),
+		BarkServerURL:   os.Getenv("BARK_SERVER_URL"),
 	}
 }
 

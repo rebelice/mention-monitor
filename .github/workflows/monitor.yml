@@ -28,8 +28,7 @@ jobs:
           KEYWORDS: ${{ vars.KEYWORDS }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           GOOGLE_ALERT_URLS: ${{ secrets.GOOGLE_ALERT_URLS }}
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
           BARK_DEVICE_KEY: ${{ secrets.BARK_DEVICE_KEY }}
           BARK_SERVER_URL: ${{ secrets.BARK_SERVER_URL }}
         run: go run ./cmd/monitor

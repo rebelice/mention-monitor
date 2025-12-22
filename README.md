@@ -1,12 +1,12 @@
 # Mention Monitor
 
-Monitor keyword mentions across the internet and get notified via Bark. All mentions are archived to Notion for easy browsing and management.
+Monitor keyword mentions across the internet and get notified via Bark. All mentions are archived to MongoDB Cloud Atlas for easy browsing and management.
 
 ## Features
 
 - **11 Data Sources**: Hacker News, Reddit, GitHub, Twitter (via Nitter), Dev.to, Medium, Stack Overflow, Product Hunt, Lobsters, pkg.go.dev, Google
 - **Real-time Notifications**: Push notifications via Bark (iOS)
-- **Notion Integration**: All mentions stored in a Notion database for easy management
+- **MongoDB Integration**: All mentions stored in MongoDB Cloud Atlas for easy management
 - **GitHub Actions**: Runs every 15 minutes, completely free
 - **Monthly Archives**: Automatic monthly archiving with git tags
 
@@ -16,36 +16,17 @@ Monitor keyword mentions across the internet and get notified via Bark. All ment
 
 Click the "Fork" button to create your own copy.
 
-### 2. Create Notion Database
+### 2. Set up MongoDB Cloud Atlas
 
-1. Go to [Notion](https://notion.so) and create a new database
-2. Add these properties:
+1. Go to [MongoDB Cloud Atlas](https://www.mongodb.com/cloud/atlas) and create a free cluster
+2. Create a database user with read/write permissions
+3. Add your IP address to the network access list (or allow access from anywhere for GitHub Actions: `0.0.0.0/0`)
+4. Get your connection string:
+   - Click "Connect" on your cluster
+   - Choose "Connect your application"
+   - Copy the connection string (replace `<password>` with your database user password)
 
-| Property | Type | Description |
-|----------|------|-------------|
-| Title | Title | Mention title |
-| Source | Select | hackernews, reddit, github, etc. |
-| Type | Select | post, comment, issue, article, etc. |
-| URL | URL | Link to original |
-| Author | Text | Author name |
-| Content | Text | Content excerpt |
-| Keyword | Select | Matched keyword |
-| Discovered | Date | When discovered |
-| Status | Select | unread, read, archived |
-
-3. Create a [Notion Integration](https://www.notion.so/my-integrations):
-   - Click "New integration"
-   - Give it a name (e.g., "Mention Monitor")
-   - Copy the "Internal Integration Token"
-
-4. Share the database with your integration:
-   - Open your database in Notion
-   - Click "..." → "Add connections"
-   - Select your integration
-
-5. Get the Database ID:
-   - Open your database in Notion
-   - Copy the ID from the URL: `notion.so/{workspace}/{DATABASE_ID}?v=...`
+The database `mention_monitor` and collection `mentions` will be created automatically on first run.
 
 ### 3. Get Bark Device Key
 
@@ -60,8 +41,7 @@ Add these **Secrets**:
 
 | Secret | Description | Required |
 |--------|-------------|----------|
-| `NOTION_TOKEN` | Notion integration token | Yes |
-| `NOTION_DATABASE_ID` | Notion database ID | Yes |
+| `MONGODB_URI` | MongoDB Atlas connection string | Yes |
 | `BARK_DEVICE_KEY` | Bark device key | Yes |
 | `BARK_SERVER_URL` | Custom Bark server URL | No |
 | `GH_TOKEN` | GitHub personal access token (for higher rate limits) | No |
@@ -150,7 +130,7 @@ mention-monitor/
 **Completely free!**
 
 - GitHub Actions: Free for public repos
-- Notion API: Free
+- MongoDB Atlas: Free tier (512MB storage)
 - Bark: Free (or self-host)
 - All data sources: Free RSS/API
 

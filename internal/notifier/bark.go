@@ -193,3 +193,10 @@ func getSourceIcon(source string) string {
 	}
 	return ""
 }
+
+func truncateString(s string, maxLen int) string {
+	if len(s) <= maxLen {
+		return s
+	}
+	return s[:maxLen-3] + "..."
+}
