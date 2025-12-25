@@ -2,7 +2,7 @@ name: Monitor Mentions
 
 on:
   schedule:
-    - cron: '*/15 * * * *'  # Every 15 minutes
+    - cron: '0 9 * * *'  # Once per day at 9:00 UTC
   workflow_dispatch:         # Manual trigger
 
 permissions:
