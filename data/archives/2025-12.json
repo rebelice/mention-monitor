@@ -1,0 +1,18 @@
+{
+  "archived_at": "2026-01-01T02:24:44Z",
+  "month": "2025-12",
+  "mentions": [
+    {
+      "id": "github_3746245504",
+      "source": "github",
+      "type": "issue",
+      "keyword": "lazypg",
+      "title": "feat(password): switch to 99designs/keyring with fallback support",
+      "content": "- Replace zalando/go-keyring with 99designs/keyring for better backend support\r\n- Add platform-specific backend priority:\r\n  - macOS: Keychain → encrypted file\r\n  - Linux: SecretService → KWallet(for KDE) → encrypted file\r\n  - Windows: WinCred → encrypted file\r\n- Add password dialog for missing passwords (fixes #1)\r\n- Derive encrypted file password from machine ID + username\r\n- Improve error handling: show password prompt on read failure\r\n\r\nCloses #1\r\n\n\n<!-- This is an auto-generated com...",
+      "url": "https://github.com/rebelice/lazypg/pull/2",
+      "author": "rebelice",
+      "discovered_at": "2025-12-19T10:12:21.195007256Z",
+      "published_at": "2025-12-19T06:23:42Z"
+    }
+  ]
+}
