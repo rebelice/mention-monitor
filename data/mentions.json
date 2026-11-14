@@ -1,4 +1,17 @@
 {
-  "last_updated": "2026-11-13T16:47:53.704400807Z",
-  "mentions": []
+  "last_updated": "2026-11-14T15:22:39.918414387Z",
+  "mentions": [
+    {
+      "id": "github_6386925123",
+      "source": "github",
+      "type": "issue",
+      "keyword": "lazypg",
+      "title": "feat(platform): add verified support contacts",
+      "content": "Phần dữ liệu của #12: danh bạ đường dây hỗ trợ có tiếng Việt, mỗi số đã được đối chiếu từng chữ số trên trang chính thức của chính tổ chức đó (14/11/2026).\n\n- `src/data/support-contacts.json`: 8 số (Nhật 4, Hàn 2, Đài Loan 2).\n- `src/lib/support/contacts.ts`: `getSupportContacts(country)`, tra theo mã nước (không phân biệt hoa thường), trả mảng rỗng khi `null` hoặc nước không có trong danh bạ. JSON đượ...",
+      "url": "https://github.com/hoanghero125/settle/pull/26",
+      "author": "hoanghero125",
+      "discovered_at": "2026-11-14T15:22:09.25872296Z",
+      "published_at": "2026-11-14T07:27:59Z"
+    }
+  ]
 }
