@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-11-22T16:43:46.459674788Z",
+  "last_updated": "2026-11-23T20:37:56.119724894Z",
   "mentions": [
     {
       "id": "github_6386925123",
@@ -12,6 +12,18 @@
       "author": "hoanghero125",
       "discovered_at": "2026-11-14T15:22:09.25872296Z",
       "published_at": "2026-11-14T07:27:59Z"
+    },
+    {
+      "id": "github_6559775972",
+      "source": "github",
+      "type": "issue",
+      "keyword": "lazypg",
+      "title": "Add lazylongarm formula",
+      "content": "## Summary\n- Register `lazylongarm` (daviddwlee84/lazylongarm) in `tools.json`: goreleaser archives `lazylongarm_{version}_{os}_{arch}.tar.gz`, `checksums.txt`, bundled completions under `completions/`.\n- README / workflow input description / registry test: fourteen → fifteen tools.\n- No `upgrade_check` yet: `lazylongarm upgrade --check --json` reports `owner: homebrew` but not the tap-qualified `formula` field the check requires (same as lazyclash/lazypg).\n\n## Test plan\n- [x] `python3 -m unit...",
+      "url": "https://github.com/daviddwlee84/homebrew-tap/pull/2",
+      "author": "daviddwlee84",
+      "discovered_at": "2026-11-23T20:37:24.567499837Z",
+      "published_at": "2026-11-23T12:54:36Z"
     }
   ]
 }
